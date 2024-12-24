@@ -1,0 +1,6 @@
+@Fhir.Patients.Web_HostAddress = http://localhost:5076
+
+GET {{Fhir.Patients.Web_HostAddress}}/patients/
+Accept: application/json
+
+###

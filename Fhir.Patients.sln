@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fhir.Patients.Web", "Fhir.Patients.Web\Fhir.Patients.Web.csproj", "{6FF9399C-B69C-4138-8442-2E57D435B2DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fhir.Patients.AppHost", "Fhir.Patients.AppHost\Fhir.Patients.AppHost.csproj", "{6247CC46-6157-45D9-94C5-9C5F981FB211}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fhir.Patients.ServiceDefaults", "Fhir.Patients.ServiceDefaults\Fhir.Patients.ServiceDefaults.csproj", "{231A11D8-2D53-40FE-A58F-004EAB9DEC1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fhir.Patients.Domain", "Fhir.Patients.Domain\Fhir.Patients.Domain.csproj", "{5E75C012-855F-4FF9-8E83-C7664D6845A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{6A3ECB92-4B16-4E14-92C2-A18286678A89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fhir.Patients.Database.Mongo", "Database\Fhir.Patients.Database.Mongo\Fhir.Patients.Database.Mongo.csproj", "{061213E0-C36F-417F-BCD2-E2E268AD79BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6FF9399C-B69C-4138-8442-2E57D435B2DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF9399C-B69C-4138-8442-2E57D435B2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF9399C-B69C-4138-8442-2E57D435B2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF9399C-B69C-4138-8442-2E57D435B2DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6247CC46-6157-45D9-94C5-9C5F981FB211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6247CC46-6157-45D9-94C5-9C5F981FB211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6247CC46-6157-45D9-94C5-9C5F981FB211}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6247CC46-6157-45D9-94C5-9C5F981FB211}.Release|Any CPU.Build.0 = Release|Any CPU
+		{231A11D8-2D53-40FE-A58F-004EAB9DEC1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{231A11D8-2D53-40FE-A58F-004EAB9DEC1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{231A11D8-2D53-40FE-A58F-004EAB9DEC1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{231A11D8-2D53-40FE-A58F-004EAB9DEC1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E75C012-855F-4FF9-8E83-C7664D6845A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E75C012-855F-4FF9-8E83-C7664D6845A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E75C012-855F-4FF9-8E83-C7664D6845A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E75C012-855F-4FF9-8E83-C7664D6845A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{061213E0-C36F-417F-BCD2-E2E268AD79BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{061213E0-C36F-417F-BCD2-E2E268AD79BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{061213E0-C36F-417F-BCD2-E2E268AD79BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{061213E0-C36F-417F-BCD2-E2E268AD79BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{061213E0-C36F-417F-BCD2-E2E268AD79BB} = {6A3ECB92-4B16-4E14-92C2-A18286678A89}
+	EndGlobalSection
+EndGlobal
