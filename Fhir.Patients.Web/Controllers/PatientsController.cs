@@ -3,6 +3,7 @@ using Fhir.Patients.Web.Features.Responses;
 using Fhir.Patients.Web.Messages.Delete;
 using Fhir.Patients.Web.Messages.Query;
 using Fhir.Patients.Web.Messages.Store;
+using Fhir.Patients.Web.Messages.Update;
 using Fhir.Patients.Web.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,19 @@ public class PatientsController(ILogger<PatientsController> logger, IMediator me
 
         if (response.Result.IsFailure)
             _logger.LogError(response.Result.Error, "Error on deleting patient with id {id}", id);
+
+        return new OperationResult(response.Result);
+    }
+
+    [HttpPut]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public async Task<IResult> Put(PatientDto patient)
+    {
+        UpdateResourceResponse<Patient> response = await _mediator.Send(new UpdateResourceRequest<Patient>(patient.ToDomain()));
+
+        if (response.Result.IsFailure)
+            _logger.LogError(response.Result.Error, "Error on update patient {patient}", patient);
 
         return new OperationResult(response.Result);
     }
