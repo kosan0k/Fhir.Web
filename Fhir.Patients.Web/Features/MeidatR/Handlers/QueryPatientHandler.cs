@@ -15,10 +15,15 @@ namespace Fhir.Patients.Web.Features.MeidatR.Handlers
         }
 
         public async Task<QueryResourceResponse<Patient>> Handle(
-            QueryResourceRequest<Patient> request, 
+            QueryResourceRequest<Patient> request,
             CancellationToken cancellationToken)
         {
-            var result = await _patientsRepository.FindAsync(_ => true, cancellationToken);
+            var expression = request.SearchParameters is null
+                ? _ => true
+                : request.SearchParameters.BuildExpression();
+
+            var result = await _patientsRepository.FindAsync(expression, cancellationToken);
+
             return new QueryResourceResponse<Patient>(result);
         }
     }

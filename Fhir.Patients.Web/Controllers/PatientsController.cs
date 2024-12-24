@@ -17,9 +17,9 @@ public class PatientsController(ILogger<PatientsController> logger, IMediator me
     private readonly IMediator _mediator = mediator;
 
     [HttpGet(Name = "GetPatients")]
-    public async Task<IResult> Get()
+    public async Task<IResult> Get([FromQuery] SearchParameters? searchParameters = null)   
     {
-        QueryResourceResponse<Patient> response = await _mediator.Send(new QueryResourceRequest<Patient>());
+        QueryResourceResponse<Patient> response = await _mediator.Send(new QueryResourceRequest<Patient>(searchParameters));
 
         if(response.Value.IsFailure)
             _logger.LogError(response.Value.Error, "Error on retrieving patients");
