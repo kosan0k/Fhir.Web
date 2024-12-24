@@ -30,7 +30,9 @@ namespace Fhir.Patients.Web.Features.Responses
             else
             {
                 //TODO : decide which information about the error we can send as response
-                result = TypedResults.InternalServerError();
+                result = _response.Value.Error is BadHttpRequestException
+                    ? TypedResults.BadRequest(_response.Value.Error.Message)
+                    : TypedResults.InternalServerError();
             }
 
             await result.ExecuteAsync(httpContext);

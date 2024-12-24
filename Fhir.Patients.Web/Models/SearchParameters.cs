@@ -31,7 +31,7 @@ public class SearchParameters
 
     public required ILookup<string, string> Parameters { get; init; }
 
-    internal Expression<Func<Patient, bool>> BuildExpression()
+    internal Result<Expression<Func<Patient, bool>>, Exception> BuildExpression()
     {
         var parameter = Expression.Parameter(typeof(Patient), "x");
 
@@ -54,18 +54,13 @@ public class SearchParameters
                 {
                     if (value.Length > 2)
                     {
-                        Prefix prefix;
-                        string dateValue;
+                        Prefix prefix = Prefix.eq;
+                        string dateValue = value;
 
-                        if (Enum.TryParse<Prefix>(value[..2], out var prefixValue))
+                        if (Enum.TryParse<Prefix>(value[..2], out var prefixValue) && Enum.GetValues<Prefix>().Contains(prefixValue))
                         {
                             prefix = prefixValue;
                             dateValue = value[2..];
-                        }
-                        else
-                        {
-                            prefix = Prefix.eq;
-                            dateValue = value;
                         }
 
                         DateTime parsedDate = default;
@@ -89,9 +84,14 @@ public class SearchParameters
                         }
 
                         if (parsedDate == default)
-                            throw new NotSupportedException($"Invalid date value [{value}]");
+                            return new BadHttpRequestException($"Invalid date value [{value}]");
 
-                        andExpressions.Add(GetDateTimeExpression(property, prefix, parsedDate, parsedDateFomatType));
+                        var expressionResult = GetDateTimeExpression(property, prefix, parsedDate, parsedDateFomatType);
+
+                        if (expressionResult.IsFailure)
+                            return expressionResult.Error;
+
+                        andExpressions.Add(expressionResult.Value);
                     }
                 }
             }
@@ -102,7 +102,7 @@ public class SearchParameters
         return Expression.Lambda<Func<Patient, bool>>(finalExpression, parameter);
     }
 
-    private static BinaryExpression GetDateTimeExpression(
+    private static Result<BinaryExpression, Exception> GetDateTimeExpression(
         MemberExpression memberExpression,
         Prefix comparer,
         DateTime dateTime,
@@ -120,7 +120,7 @@ public class SearchParameters
                 Prefix.lt => Expression.LessThan(memberExpression, dateTimeExpression),
                 Prefix.ge => Expression.GreaterThanOrEqual(memberExpression, dateTimeExpression),
                 Prefix.le => Expression.LessThanOrEqual(memberExpression, dateTimeExpression),
-                _ => throw new NotSupportedException($"Unsupported prefix [{comparer}].")
+                _ => new BadHttpRequestException($"Unsupported prefix [{comparer}].")
             };
         }            
         else
@@ -163,7 +163,7 @@ public class SearchParameters
                             Expression.LessThan(memberExpression, upperDateExpression)),
                         Expression.LessThanOrEqual(memberExpression, dateTimeExpression)                        
                     ),
-                _ => throw new NotSupportedException($"Unsupported prefix [{comparer}]")
+                _ => new BadHttpRequestException($"Unsupported prefix [{comparer}]")
             };
         }        
     }
