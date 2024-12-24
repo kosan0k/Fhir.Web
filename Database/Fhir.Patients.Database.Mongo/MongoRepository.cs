@@ -28,9 +28,7 @@ namespace Fhir.Patients.Database.Mongo
                     filter: expression,
                     cancellationToken: token);
 
-                result = Result
-                    .Success<IEnumerable<TResource>, Exception>(
-                        cursor.ToEnumerable(token));
+                result = Result.Success<IEnumerable<TResource>, Exception>(await cursor.ToListAsync(token));
             }
             catch (Exception ex)
             {

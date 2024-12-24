@@ -1,12 +1,12 @@
 ﻿namespace Fhir.Patients.Domain.Models
 {
-    public class Patient(Name name, DateTime birthDate) : IResource
+    public class Patient : IResource
     {
         public string Id => Name.Id;
 
-        public Name Name { get; init; } = name;
+        public required Name Name { get; init; }
 
-        public DateTime BirthDate { get; init; } = birthDate;
+        public required DateTime BirthDate { get; init; }
 
         public bool Active { get; init; } = true;
 

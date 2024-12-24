@@ -1,12 +1,12 @@
 ﻿namespace Fhir.Patients.Domain.Models
 {
-    public class Name(string id, string family)
+    public class Name
     {
-        public string Id { get; init; } = id;
+        public required string Id { get; init; }
 
-        public Use Use { get; init; } = Use.Official;
+        public string Use { get; init; } = string.Empty; //= Use.Official;
 
-        public string Family { get; init; } = family;
+        public required string Family { get; init; }
 
         public string[] Given { get; init; } = [];
 
