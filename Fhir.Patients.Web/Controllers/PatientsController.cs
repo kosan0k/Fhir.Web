@@ -1,5 +1,6 @@
 using Fhir.Patients.Domain.Models;
 using Fhir.Patients.Web.Features.Responses;
+using Fhir.Patients.Web.Messages.Delete;
 using Fhir.Patients.Web.Messages.Query;
 using Fhir.Patients.Web.Messages.Store;
 using Fhir.Patients.Web.Models;
@@ -40,6 +41,19 @@ public class PatientsController(ILogger<PatientsController> logger, IMediator me
 
         if (response.Result.IsFailure)
             _logger.LogError(response.Result.Error, "Error on store patient {patient}", patient);
+
+        return new OperationResult(response.Result);
+    }
+
+    [HttpDelete]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public async Task<IResult> Delete(string id)
+    {
+        DeleteResourceResponse<Patient> response = await _mediator.Send(new DeleteResourceRequest<Patient>(id));
+
+        if (response.Result.IsFailure)
+            _logger.LogError(response.Result.Error, "Error on deleting patient with id {id}", id);
 
         return new OperationResult(response.Result);
     }

@@ -69,11 +69,13 @@ namespace Fhir.Patients.Database.Mongo
 
             try
             {
-                await _collection.DeleteOneAsync(
+                var deleteResult = await _collection.DeleteOneAsync(
                     filter: r => r.Id == id,
                     cancellationToken: token);
 
-                result = UnitResult.Success<Exception>();
+                result = deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0
+                    ? UnitResult.Success<Exception>()
+                    : UnitResult.Failure(new Exception($"Can not delete resource with id[{id}]"));
             }
             catch (Exception ex)
             {
