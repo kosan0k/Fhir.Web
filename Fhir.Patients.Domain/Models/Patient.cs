@@ -8,6 +8,8 @@
 
         public required DateTime BirthDate { get; init; }
 
+        public Gender Gender { get; init; } = Gender.Unknown;
+
         public bool Active { get; init; } = true;
 
         public override string ToString()

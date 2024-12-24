@@ -2,6 +2,7 @@ using Fhir.Patients.Domain.Models;
 using Fhir.Patients.Web.Features.Responses;
 using Fhir.Patients.Web.Messages.Query;
 using Fhir.Patients.Web.Messages.Store;
+using Fhir.Patients.Web.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,9 +28,9 @@ public class PatientsController(ILogger<PatientsController> logger, IMediator me
     }
 
     [HttpPost]
-    public async Task<IResult> Post(Patient patient)
+    public async Task<IResult> Post(PatientDto patient)
     {
-        StoreResourceResponse<Patient> response = await _mediator.Send(new StoreResourceRequest<Patient>(patient));
+        StoreResourceResponse<Patient> response = await _mediator.Send(new StoreResourceRequest<Patient>(patient.ToDomain()));
 
         if(response.Result.IsFailure)
             _logger.LogError(response.Result.Error, "Error on store patient {patient}", patient);

@@ -1,7 +1,8 @@
 
+using Fhir.Patients.Database.Mongo.Registration;
 using NLog.Extensions.Logging;
 using System.Reflection;
-using Fhir.Patients.Database.Mongo.Registration;
+using System.Text.Json.Serialization;
 
 namespace Fhir.Patients.Web;
 
@@ -22,10 +23,11 @@ public class Program
                     logging.ClearProviders();
                     logging.SetMinimumLevel(LogLevel.Trace);
                     logging.AddNLog("nlog.config");
-                })   
+                })
             .AddMongoDb()
             .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())) // Add MediatR
-            .AddControllers(); // Add services to the container.
+            .AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
