@@ -17,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Database\Fhir.Patients.Database.Mongo\Fhir.Patients.Database.Mongo.csproj" />
-    <ProjectReference Include="..\Fhir.Patients.Domain\Fhir.Patients.Domain.csproj" />
-    <ProjectReference Include="..\Fhir.Patients.ServiceDefaults\Fhir.Patients.ServiceDefaults.csproj" />
+	 <ProjectReference Include="..\Fhir.Patients.Domain\Fhir.Patients.Domain.csproj" />
+	 <ProjectReference Include="..\Database\Fhir.Patients.Database.Mongo\Fhir.Patients.Database.Mongo.csproj" />    
+    <ProjectReference Include="..\Hosting\Fhir.Patients.ServiceDefaults\Fhir.Patients..Hosting.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fhir.Patients.Web\Fhir.Patients.Web.csproj" />
+    <ProjectReference Include="..\..\Fhir.Patients.Web\Fhir.Patients.Web.csproj" />
   </ItemGroup>
 
 </Project>

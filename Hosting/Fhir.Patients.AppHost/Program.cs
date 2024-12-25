@@ -6,7 +6,7 @@ var mongo = builder.AddMongoDB("mongo")
 
 var mongodb = mongo.AddDatabase("mongodb");
 
-builder.AddProject<Projects.Fhir_Patients_Web>("fhir-patients-web")
+builder.AddProject<Projects.Fhir_Patients_Web>(name: "fhir-patients-web")
        .WithReference(mongodb)
        .WaitFor(mongodb);
 
