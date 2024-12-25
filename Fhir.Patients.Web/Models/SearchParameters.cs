@@ -50,56 +50,30 @@ public class SearchParameters
                 return new BadHttpRequestException($"Can not search with key {group.Key}");
 
             var memberExpression = Expression.Property(expression: parameter, resourceProperty);
+            var values = group.ToList();
 
             if (memberExpression.Type.Equals(typeof(DateTime)) && group.Any())
             {
-                //https://www.hl7.org/fhir/search.html#date
-
-                var values = group.ToList();
-
-                foreach (var value in values)
+                foreach (var dateTimeStringValue in values)
                 {
-                    if (value.Length > 2)
-                    {
-                        Prefix prefix = Prefix.eq;
-                        string dateValue = value;
+                    var expressionResult = GetDateTimeExpression(memberExpression, dateTimeStringValue);
 
-                        if (Enum.TryParse<Prefix>(value[..2], out var prefixValue) && Enum.GetValues<Prefix>().Contains(prefixValue))
-                        {
-                            prefix = prefixValue;
-                            dateValue = value[2..];
-                        }
+                    if (expressionResult.IsFailure)
+                        return expressionResult.Error;
 
-                        DateTime parsedDate = default;
-                        DateTimeFormatType parsedDateFomatType = DateTimeFormatType.Instant;
+                    andExpressions.Add(expressionResult.Value);
+                }
+            }
+            else if(memberExpression.Type.Equals(typeof(string)))
+            {
+                foreach (var stringValue in values)
+                {
+                    var expressionResult = GetStringExpression(memberExpression, stringValue);
 
-                        foreach (var format in _dateFormats)
-                        {
-                            var dateParsed = DateTimeOffset.TryParseExact(
-                                dateValue,
-                                format.Format,
-                                CultureInfo.InvariantCulture,
-                                DateTimeStyles.RoundtripKind,
-                                out DateTimeOffset result);
+                    if (expressionResult.IsFailure)
+                        return expressionResult.Error;
 
-                            if (dateParsed)
-                            {
-                                parsedDate = result.DateTime;
-                                parsedDateFomatType = format.Type;
-                                break;
-                            }
-                        }
-
-                        if (parsedDate == default)
-                            return new BadHttpRequestException($"Invalid date value [{value}]");
-
-                        var expressionResult = GetDateTimeExpression(memberExpression, prefix, parsedDate, parsedDateFomatType);
-
-                        if (expressionResult.IsFailure)
-                            return expressionResult.Error;
-
-                        andExpressions.Add(expressionResult.Value);
-                    }
+                    andExpressions.Add(expressionResult.Value);
                 }
             }
         }
@@ -107,6 +81,57 @@ public class SearchParameters
         var finalExpression = andExpressions.Aggregate(Expression.AndAlso);
 
         return Expression.Lambda<Func<TResource, bool>>(finalExpression, parameter);
+    }
+
+    private static Result<BinaryExpression, Exception> GetStringExpression(
+        MemberExpression memberExpression,
+        string stringValue)
+        //TODO: and wildcard support
+        //For now check only equality
+        => Expression.Equal(memberExpression, Expression.Constant(stringValue, typeof(string))); 
+
+    //https://www.hl7.org/fhir/search.html#date
+    private static Result<BinaryExpression, Exception> GetDateTimeExpression(
+        MemberExpression memberExpression,
+        string dateTimeString)
+    {
+        if (dateTimeString.Length > 2)
+        {
+            Prefix prefix = Prefix.eq;
+
+            if (Enum.TryParse<Prefix>(dateTimeString[..2], out var prefixValue) && Enum.GetValues<Prefix>().Contains(prefixValue))
+            {
+                prefix = prefixValue;
+                dateTimeString = dateTimeString[2..];
+            }
+
+            DateTime parsedDate = default;
+            DateTimeFormatType parsedDateFomatType = DateTimeFormatType.Instant;
+
+            foreach (var format in _dateFormats)
+            {
+                var dateParsed = DateTimeOffset.TryParseExact(
+                    dateTimeString,
+                    format.Format,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind,
+                    out DateTimeOffset result);
+
+                if (dateParsed)
+                {
+                    parsedDate = result.DateTime;
+                    parsedDateFomatType = format.Type;
+                    break;
+                }
+            }
+
+            return parsedDate == default
+                ? new BadHttpRequestException($"Invalid date time value [{dateTimeString}]")
+                : GetDateTimeExpression(memberExpression, prefix, parsedDate, parsedDateFomatType);
+        }
+        else
+            return new BadHttpRequestException($"Invalid date time value [{dateTimeString}]");
+
     }
 
     private static Result<BinaryExpression, Exception> GetDateTimeExpression(
