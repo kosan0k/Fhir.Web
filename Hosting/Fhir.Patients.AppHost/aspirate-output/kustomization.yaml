@@ -1,0 +1,9 @@
+resources:
+- mongo
+- fhir-patients-web
+- dashboard.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+

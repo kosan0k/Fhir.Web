@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json.schemastore.org/aspire-8.0.json",
+  "resources": {
+    "mongo": {
+      "type": "container.v0",
+      "connectionString": "mongodb://admin:{mongo-password.value}@{mongo.bindings.tcp.host}:{mongo.bindings.tcp.port}?authSource=admin\u0026authMechanism=SCRAM-SHA-256",
+      "image": "docker.io/library/mongo:8.0",
+      "volumes": [
+        {
+          "name": "fhir.patients.hosting.apphost-4b9a63032d-mongo-data",
+          "target": "/data/db",
+          "readOnly": false
+        }
+      ],
+      "env": {
+        "MONGO_INITDB_ROOT_USERNAME": "admin",
+        "MONGO_INITDB_ROOT_PASSWORD": "{mongo-password.value}"
+      },
+      "bindings": {
+        "tcp": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 27017
+        }
+      }
+    },
+    "mongodb": {
+      "type": "value.v0",
+      "connectionString": "mongodb://admin:{mongo-password.value}@{mongo.bindings.tcp.host}:{mongo.bindings.tcp.port}/mongodb?authSource=admin\u0026authMechanism=SCRAM-SHA-256"
+    },
+    "fhir-patients-web": {
+      "type": "project.v0",
+      "path": "../../Fhir.Patients.Web/Fhir.Patients.Web.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "HTTP_PORTS": "{fhir-patients-web.bindings.http.targetPort}",
+        "ConnectionStrings__mongodb": "{mongodb.connectionString}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        }
+      }
+    },
+    "mongo-password": {
+      "type": "parameter.v0",
+      "value": "{mongo-password.inputs.value}",
+      "inputs": {
+        "value": {
+          "type": "string",
+          "secret": true,
+          "default": {
+            "generate": {
+              "minLength": 22,
+              "special": false
+            }
+          }
+        }
+      }
+    }
+  }
+}
