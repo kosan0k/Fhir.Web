@@ -3,7 +3,7 @@ using Fhir.Patients.Domain.Models;
 using Fhir.Patients.Web.Messages.Store;
 using MediatR;
 
-namespace Fhir.Patients.Web.Features.MeidatR.Handlers
+namespace Fhir.Patients.Web.Features.MediatR.Handlers
 {
     public class StorePatientHandler : IRequestHandler<StoreResourceRequest<Patient>, StoreResourceResponse<Patient>>
     {

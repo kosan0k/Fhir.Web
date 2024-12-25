@@ -1,10 +1,10 @@
 ﻿using Fhir.Patients.Domain.Contracts;
 using Fhir.Patients.Domain.Models;
+using Fhir.Patients.Web.Features.Search;
 using Fhir.Patients.Web.Messages.Query;
 using MediatR;
-using System.Linq.Expressions;
 
-namespace Fhir.Patients.Web.Features.MeidatR.Handlers
+namespace Fhir.Patients.Web.Features.MediatR.Handlers
 {
     public class QueryPatientHandler : IRequestHandler<QueryResourceRequest<Patient>, QueryResourceResponse<Patient>>
     {
@@ -19,21 +19,12 @@ namespace Fhir.Patients.Web.Features.MeidatR.Handlers
             QueryResourceRequest<Patient> request,
             CancellationToken cancellationToken)
         {
-            Expression<Func<Patient, bool>> expression;
+            var buildExpressionResult = FhirSearchExpressions.BuildExpression<Patient>(request.SearchParameters);
 
-            if (request.SearchParameters is null)
-                expression = _ => true;
-            else
-            {
-                var buildExpressionResult = request.SearchParameters.BuildExpression<Patient>();
+            if (buildExpressionResult.IsFailure)
+                return new QueryResourceResponse<Patient>(buildExpressionResult.Error);
 
-                if (buildExpressionResult.IsSuccess)
-                    expression = buildExpressionResult.Value;
-                else
-                    return new QueryResourceResponse<Patient>(buildExpressionResult.Error);
-            }
-
-            var result = await _patientsRepository.FindAsync(expression, cancellationToken);
+            var result = await _patientsRepository.FindAsync(buildExpressionResult.Value, cancellationToken);
 
             return new QueryResourceResponse<Patient>(result);
         }
