@@ -25,7 +25,7 @@ namespace Fhir.Patients.Web.Features.MeidatR.Handlers
                 expression = _ => true;
             else
             {
-                var buildExpressionResult = request.SearchParameters.BuildExpression();
+                var buildExpressionResult = request.SearchParameters.BuildExpression<Patient>();
 
                 if (buildExpressionResult.IsSuccess)
                     expression = buildExpressionResult.Value;

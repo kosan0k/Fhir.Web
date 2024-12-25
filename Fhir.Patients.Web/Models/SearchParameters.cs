@@ -4,6 +4,7 @@ using Fhir.Patients.Web.Features.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Fhir.Patients.Web.Models;
 
@@ -31,7 +32,8 @@ public class SearchParameters
 
     public required ILookup<string, string> Parameters { get; init; }
 
-    internal Result<Expression<Func<Patient, bool>>, Exception> BuildExpression()
+    internal Result<Expression<Func<TResource, bool>>, Exception> BuildExpression<TResource>()
+        where TResource : IResource
     {
         var parameter = Expression.Parameter(typeof(Patient), "x");
 
@@ -39,12 +41,17 @@ public class SearchParameters
 
         foreach (var group in Parameters)
         {
-            var property = Expression.Property(expression: parameter, propertyName: group.Key);
+            var resourceProperty = typeof(TResource)
+                .GetProperty(
+                    group.Key, 
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
 
-            if (property is null)
-                continue;
+            if(resourceProperty is null)
+                return new BadHttpRequestException($"Can not search with key {group.Key}");
 
-            if (property.Type.Equals(typeof(DateTime)) && group.Any())
+            var memberExpression = Expression.Property(expression: parameter, resourceProperty);
+
+            if (memberExpression.Type.Equals(typeof(DateTime)) && group.Any())
             {
                 //https://www.hl7.org/fhir/search.html#date
 
@@ -86,7 +93,7 @@ public class SearchParameters
                         if (parsedDate == default)
                             return new BadHttpRequestException($"Invalid date value [{value}]");
 
-                        var expressionResult = GetDateTimeExpression(property, prefix, parsedDate, parsedDateFomatType);
+                        var expressionResult = GetDateTimeExpression(memberExpression, prefix, parsedDate, parsedDateFomatType);
 
                         if (expressionResult.IsFailure)
                             return expressionResult.Error;
@@ -99,7 +106,7 @@ public class SearchParameters
 
         var finalExpression = andExpressions.Aggregate(Expression.AndAlso);
 
-        return Expression.Lambda<Func<Patient, bool>>(finalExpression, parameter);
+        return Expression.Lambda<Func<TResource, bool>>(finalExpression, parameter);
     }
 
     private static Result<BinaryExpression, Exception> GetDateTimeExpression(
